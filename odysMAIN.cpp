@@ -2,11 +2,10 @@
 #include <iostream>
 #include <sys/time.h>
 #include <cstring>
-//IF YOU WANT TO TRY SOMETHING DIFFERRENT JUST CHANGE THE DEFINE CALLS 
-//AND HIT MAKE AGAIN
+// To try something different, just change these 3 defines
 #define TRAINSIZE 10000
 #define TESTSIZE 20000
-#define DIMENSIONS 8 //we tried with 8,16,32
+#define DIMENSIONS 8
 using namespace std;
 
 inline void print_time(timeval &tv1, timeval &tv2, char *message) {
@@ -67,9 +66,13 @@ int main(int argc, char const *argv[]) {
         int bestLabel = -1;
         for (int j = 0; j < TRAINSIZE; j++) {
             int curDist = EuclideanDistance(PointsArray[j], SearchPointsArray[i], DIMENSIONS);
-            if (curDist < minDist)
+            if (curDist < minDist) {
                 bestLabel = PointsArray[j][DIMENSIONS];
+                minDist = curDist;
+            }
         }
+        // if (bestLabel != SearchPointsArray[i][DIMENSIONS])
+        //     printf("MISTAKE 1, best=%d, actual=%d\n", bestLabel, SearchPointsArray[i][DIMENSIONS]);
     }
 
     gettimeofday(&tv3, NULL);
@@ -79,10 +82,8 @@ int main(int argc, char const *argv[]) {
     int* currentBest;
     for (int i = 0; i < TESTSIZE; ++i) {
         tri->NN(SearchPointsArray[i], &currentBest);
-        // for (int j = 0; j < DIMENSIONS; ++j) {
-        //     if (currentBest[j] != NearestPointPointers[i][j])
-        //         printf("MISTAKE\n");
-        // }
+        // if (currentBest[DIMENSIONS] != SearchPointsArray[i][DIMENSIONS])
+        //     printf("MISTAKE 2\n");
     }
 
     gettimeofday(&tv4, NULL);
@@ -90,12 +91,20 @@ int main(int argc, char const *argv[]) {
     print_time(tv3, tv4, message);
 
     tri->ThreadSearchWrapper(SearchPointsArray, TESTSIZE, NearestPointPointers, 6);
+    for (int i = 0; i < TESTSIZE; ++i) {
+        // if (NearestPointPointers[i][DIMENSIONS] != SearchPointsArray[i][DIMENSIONS])
+        //     printf("MISTAKE 3\n");
+    }
 
     gettimeofday(&tv5, NULL);
     strcpy(message, "Time for 6 threads         ");
     print_time(tv4, tv5, message);
 
     tri->ThreadSearchWrapper(SearchPointsArray, TESTSIZE, NearestPointPointers, 12);
+    for (int i = 0; i < TESTSIZE; ++i) {
+        // if (NearestPointPointers[i][DIMENSIONS] != SearchPointsArray[i][DIMENSIONS])
+        //     printf("MISTAKE 4\n");
+    }
 
     gettimeofday(&tv6, NULL);
     strcpy(message, "Time for 12 threads        ");
@@ -109,4 +118,4 @@ int main(int argc, char const *argv[]) {
     delete[] PointsArray;
     delete[] SearchPointsArray;
     return 0;
-} 
+}
