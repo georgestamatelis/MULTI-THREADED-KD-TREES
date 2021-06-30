@@ -21,4 +21,7 @@ How to run:
 Source Files:
     KDtree.hpp -> Definition of the KDtree data structure (Class ) and it's functions
     KStree.cpp -> Code 
+    KDTree->NN() function performs a simple nearest neigbor search just like the slides ,
+    the multithreaded version , takes an array of points and searches concurently. Since each search 
+    does NOT modify the tree , that is safe to do
 
